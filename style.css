@@ -1,0 +1,663 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --neon: #00ff9c;
+  --cyan: #00e5ff;
+  --bg: #050a0f;
+  --panel: rgba(8, 20, 28, 0.9);
+}
+
+body {
+  font-family: "Courier New", Courier, monospace;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--neon);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ---------- Background effects ---------- */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 156, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 156, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 12s linear infinite;
+  z-index: 0;
+}
+
+.scanline {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: rgba(0, 255, 156, 0.08);
+  box-shadow: 0 0 12px rgba(0, 255, 156, 0.4);
+  animation: scan 5s linear infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---------- Layout ---------- */
+.wrapper {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 30px 20px;
+}
+
+/* ---------- Robot ---------- */
+.robot-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.speech {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--cyan);
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  color: var(--cyan);
+  box-shadow: 0 0 12px rgba(177, 17, 17, 0.759);
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+.speech::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 9px 9px 0;
+  border-style: solid;
+  border-color: var(--cyan) transparent transparent;
+}
+
+.typed {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--cyan);
+  width: 0;
+  animation:
+    typing 2s steps(14, end) 1s forwards,
+    blinkCaret 0.7s step-end infinite;
+}
+
+.robot {
+  position: relative;
+  width: 150px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.antenna {
+  width: 4px;
+  height: 22px;
+  margin: 0 auto;
+  background: var(--cyan);
+  position: relative;
+}
+
+.ball {
+  position: absolute;
+  top: -9px;
+  left: -5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--neon);
+  box-shadow: 0 0 10px var(--neon);
+  animation: glow 1.4s ease-in-out infinite;
+}
+
+.head {
+  position: relative;
+  width: 116px;
+  height: 88px;
+  margin: 0 auto;
+  background: #0b1c26;
+  border: 3px solid var(--cyan);
+  border-radius: 18px;
+  box-shadow: inset 0 0 14px rgba(0, 229, 255, 0.25);
+}
+
+.visor {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 30px;
+  margin: 18px 12px 0;
+  background: #02141c;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.eye {
+  width: 20px;
+  height: 14px;
+  background: var(--neon);
+  box-shadow: 0 0 10px var(--neon);
+  border-radius: 3px;
+  animation: blink 4s infinite;
+}
+
+.mouth {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 6px;
+  background: var(--cyan);
+  border-radius: 3px;
+  animation: talk 0.4s ease-in-out infinite;
+}
+
+.body {
+  position: relative;
+  width: 96px;
+  height: 56px;
+  margin: 8px auto 0;
+  background: #0b1c26;
+  border: 3px solid var(--cyan);
+  border-radius: 12px;
+}
+
+.core {
+  width: 14px;
+  height: 14px;
+  margin: 12px auto 0;
+  border-radius: 50%;
+  background: var(--neon);
+  box-shadow: 0 0 10px var(--neon);
+  animation: glow 1.4s ease-in-out infinite;
+}
+
+.arm {
+  position: absolute;
+  top: 6px;
+  width: 12px;
+  height: 40px;
+  background: #0b1c26;
+  border: 2px solid var(--cyan);
+  border-radius: 8px;
+  transform-origin: top center;
+}
+
+.arm.left {
+  left: -20px;
+  animation: swingLeft 2.5s ease-in-out infinite;
+}
+
+.arm.right {
+  right: -20px;
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+/* ---------- Login panel ---------- */
+.panel {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--neon);
+  padding: 30px 28px;
+  box-shadow: 0 0 25px rgba(0, 255, 156, 0.25), inset 0 0 20px rgba(0, 255, 156, 0.05);
+  animation: fadeIn 0.8s ease-out both;
+}
+
+.glitch {
+  position: relative;
+  font-size: 1.7rem;
+  letter-spacing: 3px;
+  text-align: center;
+  color: var(--neon);
+  animation: flicker 4s infinite;
+}
+
+.sub {
+  text-align: center;
+  color: var(--cyan);
+  font-size: 0.8rem;
+  margin: 8px 0 24px;
+}
+
+.error {
+  background: rgba(255, 59, 59, 0.1);
+  border: 1px solid #ff3b3b;
+  color: #ff3b3b;
+  padding: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  color: var(--cyan);
+}
+
+input {
+  background: #02141c;
+  border: 1px solid #0c4a3a;
+  color: var(--neon);
+  padding: 12px;
+  margin-bottom: 18px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 10px rgba(0, 255, 156, 0.4);
+}
+
+button {
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  background: var(--neon);
+  color: #050a0f;
+  box-shadow: 0 0 20px var(--neon);
+}
+
+.footer {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: #3f8f75;
+}
+
+/* ---------- Dashboard ---------- */
+.granted {
+  text-align: center;
+}
+
+.granted a {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  text-decoration: none;
+}
+
+.granted a:hover {
+  background: var(--neon);
+  color: #050a0f;
+}
+
+/* ---------- Animations ---------- */
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to   { background-position: 40px 40px; }
+}
+
+@keyframes scan {
+  0%   { top: -10%; }
+  100% { top: 110%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes typing {
+  to { width: 14ch; }
+}
+
+@keyframes blinkCaret {
+  50% { border-color: transparent; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 6px var(--neon); }
+  50%      { box-shadow: 0 0 18px var(--neon); }
+}
+
+@keyframes blink {
+  0%, 45%, 55%, 100% { transform: scaleY(1); }
+  50%                { transform: scaleY(0.1); }
+}
+
+@keyframes talk {
+  0%, 100% { height: 6px; }
+  50%      { height: 12px; }
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-25deg); }
+}
+
+@keyframes swingLeft {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(8deg); }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.4; }
+}
+
+/* ---------- Sign up page additions ---------- */
+.success {
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Sign up button on login page ---------- */
+.signup-btn {
+  display: block;
+  margin-top: 14px;
+  padding: 12px;
+  text-align: center;
+  text-decoration: none;
+  border: 1px dashed var(--cyan);
+  color: var(--cyan);
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.signup-btn:hover {
+  background: var(--cyan);
+  color: #050a0f;
+  box-shadow: 0 0 20px var(--cyan);
+}
+
+/* ---------- Red warning robot ---------- */
+.robot-area {
+  --neon: #ff2a2a;
+  --cyan: #ff3b3b;
+}
+
+.robot-area .head,
+.robot-area .body {
+  background: #1a0606;
+  border-color: #ff3b3b;
+  box-shadow: inset 0 0 14px rgba(255, 42, 42, 0.25);
+}
+
+.robot-area .visor {
+  background: #120202;
+}
+
+.robot-area .speech {
+  background: rgba(26, 6, 6, 0.9);
+  border-color: #ff3b3b;
+  color: #ff3b3b;
+  box-shadow: 0 0 12px rgba(255, 42, 42, 0.35);
+}
+
+.robot-area .speech::after {
+  border-top-color: #ff3b3b;
+}
+
+.robot-area .typed {
+  border-right-color: #ff3b3b;
+}
+
+.robot-area .arm {
+  background: #1a0606;
+  border-color: #ff3b3b;
+}
+
+/* ---------- Login panel ---------- */
+.panel {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--neon);
+  padding: 30px 28px;
+  box-shadow: 0 0 25px rgba(0, 255, 156, 0.25), inset 0 0 20px rgba(0, 255, 156, 0.05);
+  animation: fadeIn 0.8s ease-out both;
+}
+
+.glitch {
+  position: relative;
+  font-size: 1.7rem;
+  letter-spacing: 3px;
+  text-align: center;
+  color: var(--neon);
+  animation: flicker 4s infinite;
+}
+
+.sub {
+  text-align: center;
+  color: var(--cyan);
+  font-size: 0.8rem;
+  margin: 8px 0 24px;
+}
+
+.error {
+  background: rgba(255, 59, 59, 0.1);
+  border: 1px solid #ff3b3b;
+  color: #ff3b3b;
+  padding: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  color: var(--cyan);
+}
+
+input {
+  background: #02141c;
+  border: 1px solid #0c4a3a;
+  color: var(--neon);
+  padding: 12px;
+  margin-bottom: 18px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 10px rgba(0, 255, 156, 0.4);
+}
+
+button {
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  background: var(--neon);
+  color: #050a0f;
+  box-shadow: 0 0 20px var(--neon);
+}
+
+.footer {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: #3f8f75;
+}
+
+/* ---------- Dashboard ---------- */
+.granted {
+  text-align: center;
+}
+
+.granted a {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  text-decoration: none;
+}
+
+.granted a:hover {
+  background: var(--neon);
+  color: #050a0f;
+}
+
+/* ---------- Animations ---------- */
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to   { background-position: 40px 40px; }
+}
+
+@keyframes scan {
+  0%   { top: -10%; }
+  100% { top: 110%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes typing {
+  to { width: 14ch; }
+}
+
+@keyframes blinkCaret {
+  50% { border-color: transparent; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 6px var(--neon); }
+  50%      { box-shadow: 0 0 18px var(--neon); }
+}
+
+@keyframes blink {
+  0%, 45%, 55%, 100% { transform: scaleY(1); }
+  50%                { transform: scaleY(0.1); }
+}
+
+@keyframes talk {
+  0%, 100% { height: 6px; }
+  50%      { height: 12px; }
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-25deg); }
+}
+
+@keyframes swingLeft {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(8deg); }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.4; }
+}
+
+/* ---------- Sign up page additions ---------- */
+.success {
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Sign up button on login page ---------- */
+.signup-btn {
+  display: block;
+  margin-top: 14px;
+  padding: 12px;
+  text-align: center;
+  text-decoration: none;
+  border: 1px dashed var(--cyan);
+  color: var(--cyan);
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.signup-btn:hover {
+  background: var(--cyan);
+  color: #050a0f;
+  box-shadow: 0 0 20px var(--cyan);
+}
